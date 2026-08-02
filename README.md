@@ -48,16 +48,16 @@ Jeev Rakshak is an intelligent, real-time dispatch and rescue management system 
 ## 📸 Screenshots
 
 ### Public Reporting Flow
-*(Add screenshot of the public homepage and AI diagnosis)*
-![Report Flow](https://via.placeholder.com/800x450/F8F6F0/3A2C27?text=Report+Incident+UI)
+*(Emergency reporting interface with AI diagnostics)*
+![Report Flow](https://image.thum.io/get/width/1200/crop/800/https://jeev-rakshak-web.vercel.app/report)
 
 ### NGO Dispatch Dashboard
-*(Add screenshot of the NGO dashboard with active cases)*
-![NGO Dashboard](https://via.placeholder.com/800x450/F8F6F0/3A2C27?text=NGO+Dashboard+UI)
+*(Secure portal for verified NGOs)*
+![NGO Dashboard](https://image.thum.io/get/width/1200/crop/800/https://jeev-rakshak-web.vercel.app/ngo/login)
 
-### SMS Alert Tool
-*(Add screenshot of the mobile-responsive SMS broadcast tool)*
-![SMS Tool](https://via.placeholder.com/800x450/F8F6F0/3A2C27?text=SMS+Tool+UI)
+### Web Application Overview
+*(Public landing page and access points)*
+![SMS Tool](https://image.thum.io/get/width/1200/crop/800/https://jeev-rakshak-web.vercel.app/)
 
 ---
 
