@@ -1,0 +1,17 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Report {
+  id        Int      @id @default(autoincrement())
+  location  String
+  analysis  String
+  imageUrl  String
+  status    String   @default("PENDING") // PENDING, ACCEPTED, COMPLETED
+  createdAt DateTime @default(now())
+  acceptedBy String? 
+}
