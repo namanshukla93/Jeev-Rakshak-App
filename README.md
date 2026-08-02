@@ -2,7 +2,7 @@
 
 Jeev Rakshak is an intelligent, real-time dispatch and rescue management system designed to save injured stray animals. It bridges the gap between everyday citizens reporting emergencies and local NGOs/clinics responding to them.
 
-![Jeev Rakshak Banner](https://via.placeholder.com/1200x400/3A2C27/F1B942?text=Jeev+Rakshak+Rescue+Platform)
+![Jeev Rakshak Banner](https://image.thum.io/get/width/1200/crop/600/https://jeev-rakshak-web.vercel.app/)
 
 ## 🚀 Live Demo
 **Production URL:** [https://jeev-rakshak-web.vercel.app](https://jeev-rakshak-web.vercel.app)
