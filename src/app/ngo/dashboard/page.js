@@ -231,7 +231,7 @@ export default function NGODashboard() {
               style={{ padding: '0.5rem 1rem', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               <Smartphone size={16} />
-              {showSmsTool ? 'Hide SMS Tool' : '📲 SMS Tool'}
+              {showSmsTool ? 'Hide SMS Tool' : '?? SMS Tool'}
             </button>
 
             <div style={{ padding: '0.5rem 1rem', backgroundColor: '#E0F2FE', color: '#0369A1', borderRadius: '9999px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
@@ -301,27 +301,27 @@ export default function NGODashboard() {
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
-                      onClick={() => setSmsMessage('🚨 JEEV RAKSHAK ALERT: Immediate animal rescue needed at Hazratganj. Please respond.')}
+                      onClick={() => setSmsMessage('[ALERT] JEEV RAKSHAK: Immediate animal rescue needed at reported location. Please respond.')}
                       className="btn btn-outline"
                       style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', color: 'var(--bg-primary)', borderColor: 'var(--border-color)' }}
                     >
-                      🚨 Rescue Alert
+                      Rescue Alert
                     </button>
                     <button
                       type="button"
-                      onClick={() => setSmsMessage('🚑 AMBULANCE EN-ROUTE: Rescue vehicle dispatched to site.')}
+                      onClick={() => setSmsMessage('[AMBULANCE] JEEV RAKSHAK: Rescue vehicle dispatched to incident site.')}
                       className="btn btn-outline"
                       style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', color: 'var(--bg-primary)', borderColor: 'var(--border-color)' }}
                     >
-                      🚑 Dispatched
+                      Dispatched
                     </button>
                     <button
                       type="button"
-                      onClick={() => setSmsMessage('🩺 VET NEEDED: Critical animal case requires immediate consultation.')}
+                      onClick={() => setSmsMessage('[VET] JEEV RAKSHAK: Critical animal case requires immediate vet consultation.')}
                       className="btn btn-outline"
                       style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', color: 'var(--bg-primary)', borderColor: 'var(--border-color)' }}
                     >
-                      🩺 Vet Required
+                      Vet Required
                     </button>
                   </div>
                 </div>
@@ -496,7 +496,8 @@ function ReportCard({ report, onAccept, onUpdateCondition, ngoName }) {
     setSendingCardSms(true);
     setCardSmsStatus(null);
 
-    const smsText = `🚨 JEEV RAKSHAK DISPATCH ALERT\n\n📍 Location: ${report.location}\nStatus: ${report.status}\nAssigned: ${report.assigned_ngo || 'BROADCASTED'}\n\nPlease check dashboard for details.`;
+    const cleanLoc = (report.location || '').split(',').slice(0, 2).join(',').trim();
+    const smsText = `[ALERT] JEEV RAKSHAK DISPATCH\nLoc: ${cleanLoc}\nStatus: ${report.status}\nAssigned: ${report.assigned_ngo || 'BROADCASTED'}\nCheck dashboard for details.`;
 
     try {
       const res = await fetch('/api/send-sms', {
@@ -599,7 +600,7 @@ function ReportCard({ report, onAccept, onUpdateCondition, ngoName }) {
             
             {cardSmsStatus && (
               <div style={{ fontSize: '0.8rem', padding: '0.5rem', borderRadius: '6px', marginBottom: '0.5rem', backgroundColor: cardSmsStatus.success ? '#D1FAE5' : '#FEE2E2', color: cardSmsStatus.success ? '#065F46' : '#991B1B' }}>
-                {cardSmsStatus.success ? `✅ SMS Sent! SID: ${cardSmsStatus.sid}` : `❌ ${cardSmsStatus.error}`}
+                {cardSmsStatus.success ? `? SMS Sent! SID: ${cardSmsStatus.sid}` : `? ${cardSmsStatus.error}`}
               </div>
             )}
 

@@ -63,46 +63,34 @@ export async function POST(req) {
 
     const report = reportData[0];
 
-    // 3. Build structured SMS alert text
-    let species = 'Unknown Animal';
-    let condition = 'Condition not specified';
+    // 3. Build structured SMS alert text (Compact GSM-7 for instant delivery)
+    let species = 'Animal';
     let urgency = 'MEDIUM';
-    let injuries = [];
-    let immediateSteps = [];
+    let condition = '';
 
     try {
       const parsed = typeof data.analysis === 'string' ? JSON.parse(data.analysis) : data.analysis;
       if (parsed && typeof parsed === 'object') {
         species = parsed.species || species;
-        condition = parsed.condition || condition;
         urgency = parsed.urgencyLevel || urgency;
-        injuries = Array.isArray(parsed.injuries) ? parsed.injuries.slice(0, 2) : [];
-        immediateSteps = Array.isArray(parsed.immediateSteps) ? parsed.immediateSteps.slice(0, 2) : [];
+        condition = (parsed.condition || '').replace(/[#*{}":\n]/g, ' ').trim().substring(0, 60);
       } else if (typeof data.analysis === 'string') {
-        condition = data.analysis.replace(/[#*{}":\n]/g, ' ').trim().substring(0, 80);
+        condition = data.analysis.replace(/[#*{}":\n]/g, ' ').trim().substring(0, 60);
       }
     } catch (e) {
-      condition = typeof data.analysis === 'string'
-        ? data.analysis.replace(/[#*{}":\n]/g, ' ').trim().substring(0, 80)
-        : 'Check dashboard for details';
+      condition = '';
     }
 
-    const urgencyEmoji = urgency === 'HIGH' ? '🔴' : urgency === 'LOW' ? '🟢' : '🟡';
-    const injuriesLine = injuries.length > 0 ? `\nInjuries: ${injuries.join(', ')}` : '';
-    const stepsLine = immediateSteps.length > 0 ? `\nImmediate: ${immediateSteps.join(' | ')}` : '';
-
-    const buildAlertMsg = (recipientName) =>
-`🚨 JEEV RAKSHAK - ANIMAL EMERGENCY 🚨
-
-Animal: ${species}
-Urgency: ${urgencyEmoji} ${urgency}${injuriesLine}
-Condition: ${condition.substring(0, 80)}${stepsLine}
-
-Location: ${data.location}
-Assigned To: ${recipientName}
-
-👉 Login to accept dispatch:
-jeev-rakshak.vercel.app/ngo/login`;
+    const shortLoc = (data.location || '').split(',').slice(0, 2).join(',').trim();
+    const buildAlertMsg = (recipientName) => {
+      const target = recipientName && recipientName !== 'BROADCAST (All NGOs)' ? `For: ${recipientName.substring(0, 20)}\n` : '';
+      const condLine = condition ? `Cond: ${condition}\n` : '';
+      return `[EMERGENCY] Jeev Rakshak Alert
+Animal: ${species.substring(0, 25)}
+Urgency: ${urgency}
+${condLine}Loc: ${shortLoc.substring(0, 40)}
+${target}Accept at: jeev-rakshak.vercel.app/ngo/login`;
+    };
 
     const messageText = buildAlertMsg('BROADCAST (All NGOs)');
     
@@ -160,32 +148,22 @@ export async function PUT(req) {
         
       if (error) throw error;
 
-      // Send SMS alert on ACCEPT
+      // Send SMS alert on ACCEPT (Compact GSM-7 format)
       const acceptMsg =
-`✅ DISPATCH ACCEPTED - JEEV RAKSHAK
-
-Rescue Case #${id.slice(0, 8)} has been accepted.
-
-Accepted By: ${ngoName}
+`[ACCEPTED] Jeev Rakshak Case #${id.slice(0, 8)}
+Accepted by: ${ngoName.substring(0, 30)}
 Contact: ${ngoPhone || 'N/A'}
-
-Please proceed to the incident location and begin rescue operations immediately.
-
-Track: jeev-rakshak.vercel.app/ngo/login`;
+Please proceed to location immediately.
+Dashboard: jeev-rakshak.vercel.app/ngo/login`;
 
       await sendSMS('+919369617224', acceptMsg);
 
       if (ngoPhone) {
         const ngoConfirmMsg =
-`✅ JEEV RAKSHAK - Dispatch Confirmed
-
-You have accepted Rescue Case #${id.slice(0, 8)}.
-
-Please respond immediately and head to the reported location. Update the case status after treatment via the dashboard.
-
-Dashboard: jeev-rakshak.vercel.app/ngo/login
-
-Thank you for your service! 🐾`;
+`[CONFIRMED] Jeev Rakshak Case #${id.slice(0, 8)}
+You accepted this rescue dispatch.
+Please head to the reported incident location.
+Dashboard: jeev-rakshak.vercel.app/ngo/login`;
         await sendSMS(ngoPhone, ngoConfirmMsg);
       }
 
@@ -232,17 +210,12 @@ Thank you for your service! 🐾`;
       if (error) throw error;
 
       // Send SMS alert on Treatment Update / Resolve
+      const cleanNotes = (conditionReport || 'Animal has received care.').replace(/[#*{}":\n]/g, ' ').trim().substring(0, 60);
       const resolveMsg =
-`🩺 JEEV RAKSHAK - CASE RESOLVED
-
-Rescue Case #${id.slice(0, 8)} has been marked RESOLVED.
-
-Post-Treatment Update:
-${(conditionReport || 'No notes provided.').substring(0, 120)}
-
-Great work! The animal has received care. 🐾
-
-View full report: jeev-rakshak.vercel.app/ngo/login`;
+`[RESOLVED] Jeev Rakshak Case #${id.slice(0, 8)}
+Case marked RESOLVED.
+Update: ${cleanNotes}
+Details: jeev-rakshak.vercel.app/ngo/login`;
       await sendSMS('+919369617224', resolveMsg);
 
       return Response.json({ success: true, report: updateData[0] });
